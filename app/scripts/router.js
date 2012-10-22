@@ -1,16 +1,23 @@
-
+var Router;
 
 (function ($){
     'use strict';
-    
-    // Defining the application router, you can attach sub routers here.
-    var Router = Backbone.Router.extend({
+
+    Router = Backbone.Router.extend({
+	  initialize: function (){
+	  	  
+	  },
+	  
       routes: {
-        "": "index"
+        "*index": "main"
       },
-
-      index: function() {
-
+	  
+      current: function () {
+          return Backbone.history.fragment;
+      },
+	  
+      main: function() {
+		  APP.view = new CoreView();
       }
     });
 
