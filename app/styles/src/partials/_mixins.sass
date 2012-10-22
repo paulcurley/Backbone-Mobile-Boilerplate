@@ -1,0 +1,291 @@
+// Webfont variations to be used
+$wf-regular : "Rockwell W02", sans-serif
+$wf-bold : "Rockwell W02 Bold", sans-serif
+$wf-light : "Rockwell W02 Light", sans-serif
+$wf-italic : "Rockwell W02 Italic", sans-serif
+$wf-bold-italic : "RockwellW02-BoldItalic", sans-serif
+$wf-light-italic : "RockwellW02-LightItalic", sans-serif
+
+// ...and their active-state selectors (via Google's Webfont loader)
+$wf-regular-active : "html.wf-rockwellw02-n4-active"
+$wf-bold-active : "html.wf-rockwellw02bold-n4-active"
+$wf-light-active : "html.wf-rockwellw02light-n4-active"
+$wf-italic-active : "html.wf-rockwellw02italic-n4-active"
+$wf-bold-italic-active : "html.wf-rockwellw02bolditalic-n4-active"
+$wf-light-italic-active : "html.wf-rockwellw02lightitalic-n4-active"
+
+// +webfont : Sets the font to the requested webfont variation, and resets other font styles when active
+// Webfonts should be called via this mixin to ensure their weight and font-style
+// are always set to normal values and not therefore applied twice
+$active-wf-class : $wf-regular-active
+@mixin webfont($variant : $wf-regular)
+  @if $variant == $wf-bold
+    $active-wf-class : $wf-bold-active
+  @if $variant == $wf-light
+    $active-wf-class : $wf-light-active
+  @if $variant == $wf-italic
+    $active-wf-class : $wf-italic-active
+  @if $variant == $wf-bold-italic
+    $active-wf-class : $wf-bold-italic-active
+  @if $variant == $wf-light-italic
+    $active-wf-class : $wf-light-italic-active
+
+  // !! Do not deploy the following rule to production !!
+  // uncomment to highlight any webfonts that have failed to load
+  // outline : 3px solid yellow
+
+  // Only switch to the webfont and reset other font styles once the webfont is active
+  #{$active-wf-class} &
+    outline : 0
+    font-family : $variant
+    font-style : normal
+    font-weight : 400
+
+@mixin hide-text
+  text-indent : 100%
+  white-space : nowrap
+  overflow : hidden
+
+@mixin reset
+  margin : 0
+  padding : 0
+
+@mixin wrap
+  overflow-wrap : break-word
+  -webkit-hyphens : auto
+
+@mixin border-radius($radius : 4px)
+  border-radius : $radius
+
+@mixin text-shadow
+  text-shadow : -1px 1px -1px rgba(0,0,0,0.3)
+
+@mixin box-shadow($ho : 0, $vo : 0, $blur : 10px, $spread : 5px, $colour : rgba(0, 0, 0, 0.3))
+  -moz-box-shadow : $ho $vo $blur $spread $colour
+  -webkit-box-shadow : $ho $vo $blur $spread $colour
+  box-shadow : $ho $vo $blur $spread $colour
+
+@mixin gradient($from, $to)
+  background-color : $from
+  background-image : -moz-linear-gradient($from, $to)
+  background-image : -webkit-gradient(linear, 0% 0%, 0% 100%, from($from), to($to))
+  background-image : -webkit-linear-gradient($from, $to)
+  background-image : -o-linear-gradient($from, $to)
+  background-image : -ms-linear-gradient(top, $from 0%, $to 100%)
+  background-image : linear-gradient(top, $from 0%, $to 100%)
+  filter : progid:DXImageTransform.Microsoft.gradient( startColorstr='#{$from}', endColorstr='#{$to}',GradientType=0 )
+  -ms-filter : "progid:DXImageTransform.Microsoft.gradient( startColorstr='#{$from}', endColorstr='#{$to}',GradientType=0 )"
+  background-position : center
+
+@mixin opacity($opacity)
+  -ms-filter : "progid:DXImageTransform.Microsoft.Alpha(Opacity=$opacity*100)"
+  filter : alpha(opacity=$opacity*100)
+  -moz-opacity : $opacity
+  -webkit-opacity : $opacity
+  -o-opacity : $opacity
+  opacity : $opacity
+
+@mixin transform($transformations)
+  -moz-transform : $transformations
+  -webkit-transform : $transformations
+  -o-transform : $transformations
+  -ms-transform : $transformations
+  transform: $transformations
+
+@mixin animate($prop, $duration, $easing : linear)
+  -webkit-transition-property : #{$prop}
+  -webkit-transition-duration : $duration
+  -webkit-transition-timing-function : $easing
+  -moz-transition-property : #{$prop}
+  -moz-transition-duration : $duration
+  -moz-transition-timing-function : $easing
+  -o-transition-property : #{$prop}
+  -o-transition-duration : $duration
+  -o-transition-timing-function : $easing
+  -ms-transition-property : #{$prop}
+  -ms-transition-duration : $duration
+  -ms-transition-timing-function : $easing
+
+@mixin unselectable
+  -moz-user-select : -moz-none
+  -khtml-user-select : none
+  -webkit-user-select : none
+  user-select : none
+
+@mixin hide-text
+  text-indent : 100%
+  white-space : nowrap
+  overflow : hidden
+
+// +complex-shadow : Creates a dark pseudo-element before the mixin selector
+// This is used so that we can use box-shadow on elements that are adjacent to each other
+// without having the box-shadow of the 'top' (in z-index terms) element overlap onto the
+// others. It's also used to create dark divisions in gaps between adjacent elements.
+// Generally this mixin requires the selected element to be positioned (relative/absolute).
+@mixin complex-shadow($lo : 1px, $to : 1px, $ho : 0px, $vo : 0px, $color : rgba(0, 0, 0, 0.3), $blur : 8px, $spread : 3px)
+  &:before
+    content : ""
+    background : rgba(0, 0, 0, 0.9)
+    display : block
+    position : absolute
+    z-index : -1
+    width : 100%
+    height : 100%
+    left : $lo
+    top : $to
+    +border-radius
+    +box-shadow($ho, $vo, $blur, $spread, $color)
+
+// +arrow-attachment : Creates a small triangular overlap on the desired side of the element
+// This triangle (actually a rotated square, but who's counting) will inherit the background
+// of its parent element, even if that changes e.g. on hover. At the moment I'm setting the
+// parent's position as relative since it must be positioned, but this can be changed if necessary
+@mixin arrow-attachment($size : 14px, $direction : "top")
+  html.csstransforms &
+    position : relative
+
+    &:after
+      background-color : inherit
+      border :
+        left : 1px solid #000
+        top : 1px solid #000
+      content : ""
+      display : block
+      height : $size
+      position : absolute
+      width : $size
+
+      #{$direction} : -($size / 2 + 1)
+      @if $direction == "top"
+        left : 50%
+        margin-left : -($size / 2)
+        +transform(rotate(45deg))
+      @else if $direction == "right"
+        top : 50%
+        margin-top : -($size / 2)
+        +transform(rotate(135deg))
+      @else if $direction == "bottom"
+        left : 50%
+        margin-left : -($size / 2)
+        +transform(rotate(-135deg))
+      @else
+        top : 50%
+        margin-top : -($size / 2)
+        +transform(rotate(-45deg))
+
+@mixin sprite-sheet($color, $image, $left : 0px, $top : 0px)
+  background :
+    color : $color
+    image : url($image)
+    position : $left $top
+    repeat : no-repeat 
+
+@mixin custom-scrollbar($size: 8px, $track-background: grey, $thumb-color: red, $inactive-thumb-color: yellow)
+  &::-webkit-scrollbar, &::-moz-scrollbar
+    width: $size
+    height: $size
+
+  &::-webkit-scrollbar-track, &::-moz-scrollbar-track
+    border-radius: $size / 2
+    background: $track-background
+    box-shadow: rgba(255, 255, 255, 0.1) 0 1px 0, rgba(0, 0, 0, 0.2) 0 1px 1px 1px inset
+
+  &::-webkit-scrollbar-thumb, &::-moz-scrollbar-thumb
+    border-radius: $size / 2
+    background: $thumb-color
+    box-shadow: rgba(255, 255, 255, 0.1) 0 1px 0, rgba(0, 0, 0, 0.7) 0 1px 7px 0px inset
+
+
+  &::-webkit-scrollbar-thumb:window-inactive, &::-moz-scrollbar-thumb:window-inactive
+    border-radius: $size / 2
+    background: $inactive-thumb-color
+    box-shadow: rgba(255, 255, 255, 0.1) 0 1px 0, rgba(0, 0, 0, 0.4) 0 1px 1px 1px inset
+
+    
+    
+// form mixins
+
+$SOCIAL_ICON_WIDTH : 150px
+$SOCIAL_ICON_HEIGHT : 24px
+
+
+@mixin bg-position($i)
+  background :
+    position : 0px ($i * -$SOCIAL_ICON_HEIGHT)
+
+@mixin social-sprite($image)
+  background : url($BASE_URL + $image) no-repeat
+  
+  &:hover
+    +bg-position(1)
+
+  &:active
+    +bg-position(2)
+
+@mixin button($color)
+  border: 1px solid darken($color, 10%)
+  +border-radius
+  color: #fff
+  display: inline-block
+  font-weight: bold
+  +webfont($wf-bold)
+  box-shadow: inset 0 1px 1px rgba(255,255,255,0.2)
+  -moz-box-shadow: inset 0 1px 1px rgba(255,255,255,0.2)
+  -webkit-box-shadow: inset 0 1px 1px rgba(255,255,255,0.2)
+  text-shadow: -1px 1px -1px rgba(0,0,0,0.3)
+  +gradient($color, darken($color, 10%))
+  line-height: 1.1
+
+  &:hover:not([disabled])
+    border-color : darken($color, 15%)
+    +gradient(lighten($color, 5%), $color)
+    text-decoration : none    
+
+// borrowed from Compass
+
+
+// Usually compass hacks apply to both ie6 & 7 -- set this to false to disable support for both.
+$legacy-support-for-ie: true !default
+
+// Setting this to false will result in smaller output, but no support for ie6 hacks
+$legacy-support-for-ie6: $legacy-support-for-ie !default
+
+// Setting this to false will result in smaller output, but no support for ie7 hacks
+$legacy-support-for-ie7: $legacy-support-for-ie !default
+
+// Setting this to false will result in smaller output, but no support for legacy ie8 hacks
+$legacy-support-for-ie8: $legacy-support-for-ie !default
+
+@mixin clearfix
+  overflow : hidden
+  +has-layout
+
+// The `zoom` approach generates less CSS but does not validate.
+// Set this to `block` to use the display-property to hack the
+// element to gain layout.
+$default-has-layout-approach: zoom !default
+
+// This mixin causes an element matching the selector
+// to gain the "hasLayout" property in internet explorer.
+// More information on [hasLayout](http://reference.sitepoint.com/css/haslayout).
+@mixin has-layout($approach: $default-has-layout-approach)
+  @if $legacy-support-for-ie
+    @if $approach == zoom
+      @include has-layout-zoom
+    @else if $approach == block
+      @include has-layout-block
+    @else
+      @warn "Unknown has-layout approach: #{$approach}"
+      @include has-layout-zoom
+
+@mixin has-layout-zoom
+  @if $legacy-support-for-ie6 or $legacy-support-for-ie7
+    *zoom: 1
+
+@mixin has-layout-block
+  @if $legacy-support-for-ie
+    // This makes ie6 get layout
+    display: inline-block
+    // and this puts it back to block
+    &
+      display: block
